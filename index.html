@@ -491,12 +491,12 @@ function LocalStore(){
     onTally(f){subs.push(f);f(read())},
     async getMine(){return store.get("mine")},
     async setGuess(g){const t=read(),old=store.get("mine");
-      if(old&&old.key!==g.key)bump(t,old.key,-1);
+      if(old&&old.key!==g.key){bump(t,old.key,-1);if(old.wildcard&&!t.counts[old.key])delete t.wild[old.key]}
       if(!old||old.key!==g.key)bump(t,g.key,1);
       if(!old)t.total++;
       t.labels[g.key]=g.company;if(g.wildcard)t.wild[g.key]={n:g.company,by:g.name};
       store.set("tally",t);store.set("mine",g);notify()},
-    async clear(){const old=store.get("mine");if(!old)return;const t=read();bump(t,old.key,-1);t.total=Math.max(0,t.total-1);store.set("tally",t);store.set("mine",null);notify()}
+    async clear(){const old=store.get("mine");if(!old)return;const t=read();bump(t,old.key,-1);if(old.wildcard&&!t.counts[old.key])delete t.wild[old.key];t.total=Math.max(0,t.total-1);store.set("tally",t);store.set("mine",null);notify()}
   };
 }
 function FirebaseStore(cfg){
@@ -514,11 +514,14 @@ function FirebaseStore(cfg){
       if(!old||old.key!==g.key)upd.counts[g.key]=FV.increment(1);
       if(!old)upd.total=FV.increment(1);
       if(g.wildcard)upd.wild={[g.key]:{n:g.company,by:g.name}};
+      if(old&&old.key!==g.key&&old.wildcard&&(T.counts[old.key]||0)<=1)upd.wild=Object.assign(upd.wild||{},{[old.key]:FV.delete()});
       await db.doc("board/tally").set(upd,{merge:true});
     },
     async clear(){const old=await this.getMine();if(!old)return;
       await db.doc("guesses/"+uid).delete();
-      await db.doc("board/tally").set({counts:{[old.key]:FV.increment(-1)},total:FV.increment(-1)},{merge:true})}
+      const upd={counts:{[old.key]:FV.increment(-1)},total:FV.increment(-1)};
+      if(old.wildcard&&(T.counts[old.key]||0)<=1)upd.wild={[old.key]:FV.delete()};
+      await db.doc("board/tally").set(upd,{merge:true})}
   };
 }
 const S=(window.FIREBASE_CONFIG&&window.firebase)?FirebaseStore(window.FIREBASE_CONFIG):LocalStore();
@@ -652,7 +655,7 @@ function renderBoard(){
   const rows=$("#rows"),sub=$("#boardSub");
   const n=T.total||0;
   const entries=Object.entries(T.counts||{}).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]).slice(0,12);
-  sub.textContent=n?`${n} ${n===1?"person has":"people have"} locked in a pick${Object.keys(T.wild||{}).length?` · ${Object.keys(T.wild).length} wildcards on the reel`:""}.`:"Nobody has locked in yet. Be the first name on the board.";
+  sub.textContent=n?`${n} ${n===1?"person has":"people have"} locked in a pick${Object.keys(T.wild||{}).length?` · ${Object.keys(T.wild).length} ${Object.keys(T.wild).length===1?"wildcard":"wildcards"} on the reel`:""}.`:"Nobody has locked in yet. Be the first name on the board.";
   if(!S.live)sub.textContent+=" Preview mode: this board only sees picks made on this device.";
   if(!entries.length){rows.innerHTML="";return}
   const max=entries[0][1];
