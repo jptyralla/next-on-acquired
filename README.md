@@ -32,8 +32,8 @@ With `FIREBASE_CONFIG = null` the board runs in preview mode (localStorage only)
 
 ## Deploy
 
-The site is hosted on Firebase Hosting at https://next-on-acquired.web.app (GitHub Pages at
-https://jptyralla.github.io/next-on-acquired/ mirrors `main` too).
+The site is hosted on Firebase Hosting at https://next-on-acquired.web.app. Pushing to `main` does
+not deploy by itself; run:
 
 ```bash
 npx firebase-tools deploy --only hosting
