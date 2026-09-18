@@ -75,6 +75,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mast .brand{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--text)}
 .mast .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--brass-2),var(--rose));box-shadow:0 0 0 4px var(--brass-soft)}
 .mast .last{font-size:13px;color:var(--muted)}
+.mast .last a{text-decoration:none;border-bottom:1px solid var(--line-strong)}
+.mast .last a:hover{border-bottom-color:var(--brass)}
 .mast .last b{color:var(--text);font-weight:600}
 
 /* hero */
@@ -208,7 +210,8 @@ section.two{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-bottom:
 .ep .tt{margin-top:9px;font-size:13.5px;font-weight:600;line-height:1.3;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .ep .mt{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.04em;margin-top:3px}
 .more{display:flex;justify-content:center;margin-top:22px}
-footer{margin-top:64px;border-top:1px solid var(--line);padding-top:20px;color:var(--dim);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer{margin-top:64px;border-top:1px solid var(--line);padding-top:20px;color:var(--dim);font-size:13px;max-width:78ch}
+footer p{margin:0 0 8px;line-height:1.5}
 footer a{color:var(--muted);text-decoration:none}
 footer a:hover{color:var(--text)}
 
@@ -285,8 +288,9 @@ footer a:hover{color:var(--text)}
 </section>
 
 <footer>
-  <div>An unofficial fan toy. Episode data from <a href="https://www.acquired.fm/episodes" target="_blank" rel="noopener">acquired.fm</a>.</div>
-  <div>Not affiliated with Acquired, Ben Gilbert or David Rosenthal.</div>
+  <p>An unofficial fan project. Not affiliated with, sponsored by or endorsed by <a href="https://www.acquired.fm" target="_blank" rel="noopener">Acquired</a>, Ben Gilbert, David Rosenthal, or any company named on this page.</p>
+  <p>Episode titles, descriptions and artwork belong to Acquired; company names and logos belong to their owners. They appear here only to identify past episodes and link back to acquired.fm. Odds are for fun, not for betting.</p>
+  <p>Locking in a pick stores your nickname and your choice. No account, email or tracking. Picks and wildcards may be removed if they're abusive. Questions or takedown requests: <a href="https://github.com/jptyralla/next-on-acquired" target="_blank" rel="noopener">open an issue on GitHub</a>.</p>
 </footer>
 
 </div>
@@ -558,7 +562,7 @@ function oddsFor(p){
 }
 
 /* ---------- masthead + stats ---------- */
-$("#last").innerHTML=`Last aired <b>${esc(latest.title)}</b> · ${latest.season}${latest.episode?" E"+latest.episode:""} · ${fmtDate(latestDate)}`;
+$("#last").innerHTML=`Last aired <a href="https://www.acquired.fm/episodes/${esc(latest.slug)}" target="_blank" rel="noopener"><b>${esc(latest.title)}</b></a> · ${latest.season}${latest.episode?" E"+latest.episode:""} · ${fmtDate(latestDate)}`;
 $("#slot").textContent=slotLabel;
 $("#countInline").textContent=EP.length;
 $("#archSub").textContent=`${EP.length} episodes, ${fmtDate(firstDate)} to ${fmtDate(latestDate)}. Newest first.`;
