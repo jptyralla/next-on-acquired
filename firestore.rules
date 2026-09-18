@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isStr(v, max) { return v is string && v.size() > 0 && v.size() <= max; }
+    function validGuess(d) {
+      return d.keys().hasOnly(['name','company','key','wildcard','updatedAt'])
+        && isStr(d.name, 24) && isStr(d.company, 40) && isStr(d.key, 40)
+        && d.wildcard is bool && d.updatedAt == request.time;
+    }
+
+    // One guess per anonymous visitor: the document id is their auth uid.
+    match /guesses/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid && validGuess(request.resource.data);
+      allow update: if signedIn() && request.auth.uid == uid && validGuess(request.resource.data)
+        && request.time > resource.data.updatedAt + duration.value(5, 's');   // throttle flip-flopping
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+
+    // The live tally the board renders: one document, updated with atomic increments.
+    match /board/tally {
+      allow read: if true;
+      allow create, update: if signedIn()
+        && request.resource.data.keys().hasOnly(['counts','labels','wild','total']);
+    }
+  }
+}
