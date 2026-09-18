@@ -590,7 +590,7 @@ const strip=$("#strip"),stage=$("#stage"),spinBtn=$("#spin"),lockBtn=$("#lock"),
 function sizeClass(n){return n.length>22?"tiny":n.length>13?"small":""}
 function nameEl(p){const d=document.createElement("div");d.className="name "+sizeClass(p.n);p.n.split(/(-)/).forEach(part=>{if(part==="-"){const h=document.createElement("span");h.className="hy";h.textContent="-";d.appendChild(h)}else if(part)d.appendChild(document.createTextNode(part))});return d}
 let current=null,spinning=false,lastGuess=null;
-function setIdle(){strip.innerHTML="";const q=nameEl({n:"?"});q.classList.add("q");strip.appendChild(q);strip.style.transform="translateY(0)";const mid=LIVE.filter(x=>{const m=/^#([0-9a-f]{6})$/i.exec(x.bg);if(!m)return false;const n=parseInt(m[1],16),l=(0.2126*(n>>16)+0.7152*(n>>8&255)+0.0722*(n&255))/255;return l>.12&&l<.55});const p=pick(mid.length?mid:LIVE);stage.style.setProperty("--stage-bg",p.bg);stage.classList.toggle("light",isLight(p.bg))}
+function setIdle(){strip.innerHTML="";const q=nameEl({n:"?"});q.classList.add("q");strip.appendChild(q);strip.style.transform="translateY(0)";const mid=LIVE.filter(x=>{const m=/^#([0-9a-f]{6})$/i.exec(x.bg);if(!m)return false;const n=parseInt(m[1],16),l=(0.2126*(n>>16)+0.7152*(n>>8&255)+0.0722*(n&255))/255;return l>.2&&l<.55});const p=pick(mid.length?mid:LIVE);stage.style.setProperty("--stage-bg",p.bg);stage.classList.toggle("light",isLight(p.bg))}
 setIdle();
 
 function spin(){

@@ -30,7 +30,16 @@ npx serve .
 
 With `FIREBASE_CONFIG = null` the board runs in preview mode (localStorage only).
 
-## Go live
+## Deploy
+
+The site is hosted on Firebase Hosting at https://next-on-acquired.web.app (GitHub Pages at
+https://jptyralla.github.io/next-on-acquired/ mirrors `main` too).
+
+```bash
+npx firebase-tools deploy --only hosting
+```
+
+## Firebase setup (already done for this project)
 
 1. Create a Firebase project at https://console.firebase.google.com
 2. Build → Firestore Database → Create (production mode)
